@@ -216,6 +216,57 @@ aframe=new function(){
 	document.addEventListener('DOMCharacterDataModified',function(e){aframe.events.trigger('BROWSER.CHARACTER_DATA_MODIFIED',{target:e.target,data:e})},false);
 }
 
+aframe.bindFunction=function(fn,obj){
+	if(typeof(obj)!=='object')obj={};
+	if(typeof(fn)!=='function')fn=function(){};
+	return (function(that,fn){
+		return function(){
+			obj.apply(fn,arguments);
+		}
+	})(obj,fn);
+}
+
+aframe.delay=function(ms,fn){
+	alert(fn);
+	setTimeout(fn,ms);
+}
+
+aframe.cfg=function(){
+	this._data={};
+	
+	this.get=function(name){
+		var ret=undefined;
+		try{
+			ret=this._data[name];
+		}catch(E){}
+		return ret;
+	};
+	
+	this.set=function(name,value){
+		this._data[aframe.vars.stringify(name)]=value;
+	};
+	
+	this.isset=function(name){
+		var ret=false;
+		try{
+			ret=(typeof(this._data[name])!==undefined);
+		}catch(E){}
+		return ret;
+	};
+	
+	this.remove=function(name){
+		try{
+			this._data[name]=undefined;
+			delete(this._data[name]);
+		}catch(E){};
+	};
+	
+	this.clear=function(){
+		this._data={};
+		return true;
+	}
+}
+
 /**
  * The Event Handler will allow you to generate and respond to application level events
  * in your code. Any javascript anywhere after the framework has loaded can trigger an event.
@@ -707,6 +758,13 @@ aframe.dom=new function(){
 		set:function(varName,value){aframe.dom.meta.write(this,varName,value);},
 		get:function(varName){return aframe.dom.meta.read(this,varName);},
 		isset:function(varName){return aframe.dom.meta.isset(this,varName);}
+	}
+	
+	this.refreshWindowSize=function(){
+		alert('here');
+		try{
+			window.resizeBy(1,1);window.resizeBy(-1,-1);
+		}catch(E){};
 	}
 	
  	/**
